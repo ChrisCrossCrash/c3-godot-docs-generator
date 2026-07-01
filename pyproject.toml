@@ -6,8 +6,7 @@ authors = ["ChrisCrossCrash <chrislkumm@protonmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "c3_godot_docs_gen"}]
-# TODO: Add repository URL once the remote is set up.
-# repository = ""
+repository = "https://github.com/ChrisCrossCrash/c3-godot-docs-generator"
 
 [tool.poetry.scripts]
 c3-godot-docs-gen = "c3_godot_docs_gen.cli:main"
