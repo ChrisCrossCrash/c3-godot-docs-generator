@@ -3,12 +3,11 @@
 Converts Godot's `--doctool` XML class-reference output into Markdown
 documentation (GitHub-Flavored Markdown), for GDScript-only projects.
 
-<!-- TODO: Publish to PyPI and uncomment this. -->
-<!-- ## Installation
+## Installation
 
 ```sh
 pip install c3-godot-docs-gen
-```-->
+```
 
 ## Usage
 
