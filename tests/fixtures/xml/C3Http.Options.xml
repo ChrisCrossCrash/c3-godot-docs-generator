@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http.Options" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Per-request configuration. Defaults match [HTTPRequest] node defaults.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="timeout" type="float" setter="" getter="" default="0.0">
+			Maximum seconds to wait for a response. [code]0.0[/code] disables the timeout.
+		</member>
+		<member name="body_size_limit" type="int" setter="" getter="" default="-1">
+			Maximum response body size in bytes. [code]-1[/code] is unlimited.
+		</member>
+		<member name="download_chunk_size" type="int" setter="" getter="" default="65536">
+			Size in bytes of the buffer used to read the response body off the socket (via [method HTTPClient.set_read_chunk_size]). These are raw, as-received bytes — [i]before[/i] decompression — so for a compressed response this bounds the compressed read, not the decoded output. Lower values reduce peak memory use during large downloads.
+		</member>
+		<member name="accept_gzip" type="bool" setter="" getter="" default="true">
+			When [code]true[/code], sends [code]Accept-Encoding: gzip[/code] and decompresses the response body automatically. Applies to [member C3Http.Options.download_file] downloads too: compressed bytes are streamed through the decompressor straight to disk, so the file holds the decoded content. 
+When [code]false[/code], no [code]Accept-Encoding[/code] header is sent and no decompression is performed (matching [HTTPRequest]). Note this is [i]not[/i] the same as refusing compression: sending no [code]Accept-Encoding[/code] tells the server any encoding is acceptable, so it may still return a [code]Content-Encoding: gzip[/code] body. You then receive it exactly as sent — the raw, still-compressed bytes, for you to decode. To actually forbid compression, set your own [code]Accept-Encoding: identity[/code] in [code]custom_headers[/code]. A caller-supplied [code]Accept-Encoding[/code] always takes precedence and suppresses the automatic one. 
+Only [code]gzip[/code] is requested and decoded — never [code]deflate[/code], which is where this differs from [HTTPRequest] ([HTTPRequest] advertises both). HTTP [code]deflate[/code] is ambiguous: the spec says it is zlib-wrapped (RFC 1950), but many servers send raw deflate (RFC 1951) instead, and the two cannot be told apart reliably. Native [HTTPRequest] assumes zlib-wrapped and fails to decode raw-deflate responses — a rare bug that is hard to trace because it only surfaces against the uncommon servers that send raw deflate. C3Http sidesteps it by never requesting deflate at all; gzip is near-universal and brotli covers the rest, so deflate is effectively a rounding error on the modern web. If you genuinely need it, request it via [code]custom_headers[/code] and decode the bytes yourself.
+		</member>
+		<member name="max_redirects" type="int" setter="" getter="" default="8">
+			Maximum number of redirects to follow. [code]0[/code] disables following.
+		</member>
+		<member name="use_threads" type="bool" setter="" getter="" default="false">
+			When [code]true[/code], the polling loop runs on a dedicated background thread that polls at OS speed rather than once per rendered frame, lowering latency for fast endpoints and large or streaming downloads. The public [code]await[/code] API is unchanged, and this falls back to the cooperative loop on export templates without thread support. 
+The [member C3Http.Options.on_sse_event], [member C3Http.Options.on_progress], and [member C3Http.Options.on_status_changed] callbacks are automatically marshaled back to the main thread, so they stay safe to touch the scene tree. Marshaling uses [code]call_deferred[/code], which would normally let a callback run on a [i]later[/i] frame — but this client drains all pending callbacks before the [code]await[/code] resolves. So any state a callback mutates is fully settled by the time the response comes back, and the result is identical whether or not threading is on:
+[codeblock]
+# Count the connection-status changes via a callback.
+var status_changes: Array[int] = []
+var opts := C3Http.Options.new()
+opts.use_threads = true
+opts.on_status_changed = func(status: HTTPClient.Status) -&gt; void:
+    status_changes.append(status)
+
+await C3Http.request("https://example.com",
+    PackedStringArray(), HTTPClient.METHOD_GET, "", opts)
+
+# Every status change has already fired — none is still queued for a later
+# frame — so this prints the same count with use_threads true or false.
+print(status_changes.size())
+[/codeblock]
+		</member>
+		<member name="download_file" type="String" setter="" getter="" default="&quot;&quot;">
+			Path to write the response body to on disk. When non-empty, [member C3Http.Response.body] is empty and the data is in the file. The file is created only once the response body starts arriving, so a request that fails while resolving, connecting, or sending leaves the path untouched — never truncating an existing file it will not fill. If the transfer fails after writing has begun (timeout, cancellation, a decode error, or exceeding [member C3Http.Options.body_size_limit]), the partial file is removed.
+		</member>
+		<member name="tls_options" type="TLSOptions" setter="" getter="" default="null">
+			TLS options for HTTPS connections. [code]null[/code] uses [method TLSOptions.client] (validates the server certificate). Override with [method TLSOptions.client_unsafe] for self-signed certificates. 
+If you set a [member C3Http.Options.session], leaving this [code]null[/code] (the default) needs no extra thought — pooling just works. But if you [i]do[/i] set a custom [TLSOptions], you must reuse the same instance for every call that shares the session: connections are pooled by this object's identity, so a newly constructed [TLSOptions] per request produces a different pool key each time and silently defeats connection reuse.
+		</member>
+		<member name="http_proxy_host" type="String" setter="" getter="" default="&quot;&quot;">
+			Host of an HTTP proxy to route plain [code]http://[/code] requests through. Empty means a direct connection for HTTP. Has no effect on [code]https://[/code] requests — set [member C3Http.Options.https_proxy_host] for those.
+		</member>
+		<member name="http_proxy_port" type="int" setter="" getter="" default="-1">
+			Port of the proxy named by [member C3Http.Options.http_proxy_host]. Ignored when [member C3Http.Options.http_proxy_host] is empty.
+		</member>
+		<member name="https_proxy_host" type="String" setter="" getter="" default="&quot;&quot;">
+			Host of an HTTPS proxy to tunnel [code]https://[/code] requests through. Empty means a direct connection for HTTPS. Has no effect on [code]http://[/code] requests — set [member C3Http.Options.http_proxy_host] for those.
+		</member>
+		<member name="https_proxy_port" type="int" setter="" getter="" default="-1">
+			Port of the proxy named by [member C3Http.Options.https_proxy_host]. Ignored when [member C3Http.Options.https_proxy_host] is empty.
+		</member>
+		<member name="cancellation_token" type="C3Http.CancellationToken" setter="" getter="" default="null">
+			Token for cancelling this request from another coroutine or signal handler. [code]null[/code] means no cancellation support.
+		</member>
+		<member name="on_sse_event" type="Callable" setter="" getter="" default="Callable()">
+			Optional [Callable] invoked once per Server-Sent Event as the response streams in, as [code]on_sse_event.call(data: String, event_type: String,
+last_event_id: String)[/code]. [code]last_event_id[/code] is the stream's current [code]id:[/code] cursor: it persists across events per the SSE spec, so an event with no [code]id:[/code] line still reports the most recent one (echo it as a [code]Last-Event-ID[/code] header to resume after a drop; see also [member C3Http.Response.sse_retry_ms] for the suggested backoff). When set, a 2xx response body is parsed as an SSE stream rather than collected: [member C3Http.Response.body] stays empty and [method C3Http.request] resolves only when the stream closes (use [member C3Http.Options.cancellation_token] to stop it early). While streaming, [member C3Http.Options.accept_gzip] and [member C3Http.Options.download_file] are ignored, and [member C3Http.Options.timeout] becomes an idle timeout (maximum seconds between events) rather than a total deadline. A non-2xx response is collected normally, so [member C3Http.Response.ok], [member C3Http.Response.error], and the error body still work as usual. Both LF ([code]\n\n[/code]) and CRLF ([code]\r\n\r\n[/code]) event delimiters are supported.
+		</member>
+		<member name="on_progress" type="Callable" setter="" getter="" default="Callable()">
+			Optional [Callable] invoked as the response body downloads, as [code]on_progress.call(bytes_received: int, total_bytes: int)[/code]. [code]bytes_received[/code] is the cumulative byte count; [code]total_bytes[/code] is the [code]Content-Length[/code], or [code]-1[/code] when unknown (e.g. a chunked response). Fires once per non-empty chunk for both in-memory and [member C3Http.Options.download_file] downloads. Has no effect in SSE mode (see [member C3Http.Options.on_sse_event]), where [member C3Http.Options.on_sse_event] is the incremental signal instead.
+		</member>
+		<member name="on_status_changed" type="Callable" setter="" getter="" default="Callable()">
+			Optional [Callable] invoked as the underlying connection advances, as [code]on_status_changed.call(status: HTTPClient.Status)[/code] — one of [code]STATUS_RESOLVING[/code], [code]STATUS_CONNECTING[/code], [code]STATUS_CONNECTED[/code], [code]STATUS_REQUESTING[/code], [code]STATUS_BODY[/code], etc. Fires once per change, in every mode (including SSE), and repeats the cycle for each hop when redirects are followed. Purely observational: the request's outcome is still reported via the returned [C3Http.Response]. Very brief intermediate states may be coalesced.
+		</member>
+		<member name="session" type="C3Http.Session" setter="" getter="" default="null">
+			Optional [C3Http.Session] for HTTP keep-alive connection reuse. When set, idle connections to the same host are pooled and reused across calls, reducing latency for repeated requests to the same endpoint. 
+[code]null[/code] (the default) disables pooling: each call opens a fresh connection. Create a [C3Http.Session] once and share it across calls that target the same set of hosts. 
+If you also set a custom [member C3Http.Options.tls_options], share that one [TLSOptions] instance across the pooled calls too, or connection reuse is defeated. The default [code]null[/code] [member C3Http.Options.tls_options] needs no such care. See [member C3Http.Options.tls_options].
+		</member>
+	</members>
+</class>

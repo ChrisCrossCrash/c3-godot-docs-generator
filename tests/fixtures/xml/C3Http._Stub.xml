@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http._Stub" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Canned-response builder returned by [method C3Http.Mock.stub]. Configure with [method ok], [method fail], or [method returns], then discard — the [C3Http.Mock] retains the stub internally.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_init">
+			<return type="void" />
+			<param index="0" name="url" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="ok">
+			<return type="void" />
+			<param index="0" name="json" type="Dictionary" default="{}" />
+			<param index="1" name="status" type="int" default="200" />
+			<description>
+				Configures a successful response. [param json] is JSON-encoded into [member C3Http.Response.body].
+			</description>
+		</method>
+		<method name="fail">
+			<return type="void" />
+			<param index="0" name="error" type="C3Http.RequestError" />
+			<description>
+				Configures a failure response. Build [param error] with the [C3Http.RequestError] factory methods ([method C3Http.RequestError.transport], [method C3Http.RequestError.timed_out], etc.) or construct one manually.
+			</description>
+		</method>
+		<method name="returns">
+			<return type="void" />
+			<param index="0" name="response" type="C3Http.Response" />
+			<description>
+				Sets a [C3Http.Response] directly, bypassing [method ok] and [method fail].
+			</description>
+		</method>
+		<method name="_response">
+			<return type="C3Http.Response" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_url" type="String" setter="" getter="">
+		</member>
+		<member name="_preset" type="C3Http.Response" setter="" getter="" default="null">
+		</member>
+	</members>
+</class>

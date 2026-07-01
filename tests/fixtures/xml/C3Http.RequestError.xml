@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http.RequestError" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Structured error placed on [member C3Http.Response.error] when [member C3Http.Response.ok] is [code]false[/code].
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="transport" qualifiers="static">
+			<return type="C3Http.RequestError" />
+			<param index="0" name="p_message" type="String" />
+			<description>
+				Builds an error for a transport-level failure with no usable HTTP response.
+			</description>
+		</method>
+		<method name="timed_out" qualifiers="static">
+			<return type="C3Http.RequestError" />
+			<param index="0" name="p_message" type="String" />
+			<description>
+				Builds an error for a request that received no response before the timeout.
+			</description>
+		</method>
+		<method name="client_error" qualifiers="static">
+			<return type="C3Http.RequestError" />
+			<param index="0" name="p_message" type="String" />
+			<description>
+				Builds an error for a request rejected before being sent.
+			</description>
+		</method>
+		<method name="cancelled" qualifiers="static">
+			<return type="C3Http.RequestError" />
+			<param index="0" name="p_message" type="String" />
+			<description>
+				Builds an error for a caller-initiated cancellation.
+			</description>
+		</method>
+		<method name="body_size_limit_exceeded" qualifiers="static">
+			<return type="C3Http.RequestError" />
+			<param index="0" name="p_message" type="String" />
+			<description>
+				Builds an error for a response body that exceeded [member C3Http.Options.body_size_limit].
+			</description>
+		</method>
+		<method name="_to_string">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="kind" type="int" setter="" getter="" enum="C3Http.RequestError.Kind" default="0">
+			Broad category of failure. One of the [enum C3Http.RequestError.Kind] values.
+		</member>
+		<member name="message" type="String" setter="" getter="" default="&quot;&quot;">
+			Human-readable description. Never empty.
+		</member>
+		<member name="status" type="int" setter="" getter="" default="0">
+			HTTP status code, or [code]0[/code] when not applicable.
+		</member>
+	</members>
+	<constants>
+		<constant name="TRANSPORT" value="0" enum="Kind">
+			No usable HTTP response (DNS, TLS, connection, or request-start failure).
+		</constant>
+		<constant name="HTTP" value="1" enum="Kind">
+			A non-2xx status was received.
+		</constant>
+		<constant name="CLIENT" value="2" enum="Kind">
+			The request was rejected before being sent (e.g. an invalid argument).
+		</constant>
+		<constant name="CANCELLED" value="3" enum="Kind">
+			The caller aborted the request.
+		</constant>
+		<constant name="TIMEOUT" value="4" enum="Kind">
+			No response was received before the timeout elapsed.
+		</constant>
+		<constant name="BODY_SIZE_LIMIT_EXCEEDED" value="5" enum="Kind">
+			The response body exceeded [member C3Http.Options.body_size_limit].
+		</constant>
+	</constants>
+</class>

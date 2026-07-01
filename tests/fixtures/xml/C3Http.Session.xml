@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http.Session" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Holds a pool of idle HTTP connections for reuse across calls, reducing the TCP and TLS handshake cost for repeated requests to the same host.
+	</brief_description>
+	<description>
+		Create one [C3Http.Session] per logical group of requests and set it on [member C3Http.Options.session]. A [C3Http.Session] is a [RefCounted] and is freed automatically when no [C3Http.Options] objects reference it. 
+One-off callers that leave [member C3Http.Options.session] as [code]null[/code] pay zero cost — a fresh connection is opened each time, as in previous versions.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="close">
+			<return type="void" />
+			<description>
+				Closes all pooled connections and empties the pool. Optional — connections are also freed when the [C3Http.Session] goes out of scope.
+			</description>
+		</method>
+		<method name="prune">
+			<return type="void" />
+			<description>
+				Evicts all idle connections whose age exceeds [member C3Http.Session.idle_timeout]. Useful after a network change to force fresh connections on the next call.
+			</description>
+		</method>
+		<method name="_make_key">
+			<return type="String" />
+			<param index="0" name="host" type="String" />
+			<param index="1" name="port" type="int" />
+			<param index="2" name="tls" type="bool" />
+			<param index="3" name="tls_options" type="TLSOptions" />
+			<param index="4" name="options" type="C3Http.Options" />
+			<description>
+			</description>
+		</method>
+		<method name="checkout">
+			<return type="HTTPClient" />
+			<param index="0" name="key" type="String" />
+			<description>
+				Returns a connected, non-expired client for [param key], or [code]null[/code] if none is available. Stale or disconnected entries encountered during the search are discarded.
+			</description>
+		</method>
+		<method name="checkin">
+			<return type="void" />
+			<param index="0" name="key" type="String" />
+			<param index="1" name="client" type="HTTPClient" />
+			<description>
+				Returns [param client] to the pool under [param key]. If the pool is at [member C3Http.Session.max_connections_per_host] capacity, the oldest idle entry is closed and evicted.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="max_connections_per_host" type="int" setter="" getter="" default="6">
+			Maximum number of idle connections kept per unique [code](host, port, scheme, TLS, proxy)[/code] key. Extra connections beyond this limit are closed immediately on checkin.
+		</member>
+		<member name="idle_timeout" type="float" setter="" getter="" default="60.0">
+			Seconds an idle connection may sit in the pool before being discarded on the next checkout attempt. Keep this shorter than the server's keep-alive timeout (nginx defaults to 75 s, so 60 s is a safe choice). Set to [code]0.0[/code] to disable time-based eviction.
+		</member>
+		<member name="_pool" type="Dictionary" setter="" getter="" default="{}">
+		</member>
+		<member name="_mutex" type="Mutex" setter="" getter="" default="&lt;unknown&gt;">
+		</member>
+	</members>
+</class>

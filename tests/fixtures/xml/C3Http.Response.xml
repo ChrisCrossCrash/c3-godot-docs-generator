@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http.Response" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		The response returned by [method C3Http.request].
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="ok" type="bool" setter="" getter="" default="true">
+			[code]true[/code] when a response was received with a 2xx status code.
+		</member>
+		<member name="error" type="C3Http.RequestError" setter="" getter="" default="null">
+			Error details when [member C3Http.Response.ok] is [code]false[/code]; [code]null[/code] otherwise.
+		</member>
+		<member name="status" type="int" setter="" getter="" default="0">
+			HTTP status code, e.g. [code]200[/code] or [code]404[/code]. [code]0[/code] when no HTTP response was received (transport failure).
+		</member>
+		<member name="headers" type="PackedStringArray" setter="" getter="" default="PackedStringArray()">
+			Response headers as [code]"Name: Value"[/code] strings. Empty when no HTTP response was received.
+		</member>
+		<member name="body" type="PackedByteArray" setter="" getter="" default="PackedByteArray()">
+			Raw response body bytes. Empty when [member C3Http.Options.download_file] is set or when no body was received. Use [member C3Http.Response.text] for a decoded string view.
+		</member>
+		<member name="sse_retry_ms" type="int" setter="" getter="" default="-1">
+			The server's last SSE [code]retry:[/code] value, in milliseconds — the backoff it suggests before reconnecting. [code]-1[/code] when the stream sent no [code]retry:[/code] line or the response was not an SSE stream. Pair it with the [code]last_event_id[/code] from [member C3Http.Options.on_sse_event] to reconnect: wait this long, then re-request with a [code]Last-Event-ID[/code] header set to the last id seen.
+		</member>
+		<member name="text" type="String" setter="" getter="@text_getter">
+			The response body decoded as UTF-8. Computed lazily on first access and cached, so binary responses never pay the decode cost. Returns [code]""[/code] for an empty or non-UTF-8 body.
+		</member>
+		<member name="_text_cache" type="Variant" setter="" getter="" default="null">
+		</member>
+		<member name="json" type="Variant" setter="" getter="@json_getter">
+			The response body parsed as JSON. Parsed lazily on first access and cached, reusing the [member C3Http.Response.text] decode. On a parse failure this pushes an error (once, at parse time) and returns [code]null[/code]. Note that a successful parse of a literal JSON [code]null[/code] body also returns [code]null[/code].
+		</member>
+		<member name="_json_parsed" type="bool" setter="" getter="" default="false">
+		</member>
+		<member name="_json_cache" type="Variant" setter="" getter="" default="null">
+		</member>
+	</members>
+</class>

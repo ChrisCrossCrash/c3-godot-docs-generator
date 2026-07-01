@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http._Impl._ParsedURL" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_init">
+			<return type="void" />
+			<param index="0" name="h" type="String" />
+			<param index="1" name="po" type="int" />
+			<param index="2" name="pa" type="String" />
+			<param index="3" name="t" type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="host" type="String" setter="" getter="">
+		</member>
+		<member name="port" type="int" setter="" getter="">
+		</member>
+		<member name="path" type="String" setter="" getter="">
+		</member>
+		<member name="tls" type="bool" setter="" getter="">
+		</member>
+	</members>
+</class>

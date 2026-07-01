@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http.CancellationToken" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Token passed to [member C3Http.Options.cancellation_token] to cancel an in-flight request from another coroutine or signal handler.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="cancel">
+			<return type="void" />
+			<description>
+				Cancels any in-flight request holding this token. Subsequent calls have no effect.
+			</description>
+		</method>
+		<method name="is_cancelled">
+			<return type="bool" />
+			<description>
+				Returns [code]true[/code] if [method C3Http.CancellationToken.cancel] has been called.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_cancelled" type="bool" setter="" getter="" default="false">
+		</member>
+	</members>
+</class>

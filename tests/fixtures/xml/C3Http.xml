@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		General-purpose async HTTP client that requires no scene tree.
+	</brief_description>
+	<description>
+		Call the static [method request] from anywhere — no [Node] to add or configure. Every call [code]await[/code]s a [C3Http.Response] carrying [member C3Http.Response.ok] as a single failure check that covers transport errors, timeouts, and non-2xx statuses alike.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_init">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="request" qualifiers="static">
+			<return type="C3Http.Response" />
+			<param index="0" name="url" type="String" />
+			<param index="1" name="custom_headers" type="PackedStringArray" default="PackedStringArray()" />
+			<param index="2" name="method" type="int" enum="HTTPClient.Method" default="0" />
+			<param index="3" name="request_data" type="String" default="&quot;&quot;" />
+			<param index="4" name="options" type="C3Http.Options" default="null" />
+			<description>
+				Sends an HTTP request to [param url] and returns the response. [br][param custom_headers] are sent alongside any headers injected by [member C3Http.Options.accept_gzip]. [br][param method] is an [enum HTTPClient.Method] value; defaults to [code]METHOD_GET[/code]. [br][param request_data] is the raw request body string. [br][param options] controls timeout, redirects, and other per-request settings; [code]null[/code] uses all defaults.
+			</description>
+		</method>
+		<method name="request_raw" qualifiers="static">
+			<return type="C3Http.Response" />
+			<param index="0" name="url" type="String" />
+			<param index="1" name="custom_headers" type="PackedStringArray" default="PackedStringArray()" />
+			<param index="2" name="method" type="int" enum="HTTPClient.Method" default="2" />
+			<param index="3" name="request_data_raw" type="PackedByteArray" default="PackedByteArray()" />
+			<param index="4" name="options" type="C3Http.Options" default="null" />
+			<description>
+				Sends an HTTP request with a raw byte-array body, like [method request] but the body is sent as-is without UTF-8 encoding. Use for binary payloads (encoded files, serialized data, custom binary protocols). [br][param request_data_raw] is the raw request body bytes. [br][param method] defaults to [code]METHOD_POST[/code]; a raw body is ignored on [code]METHOD_GET[/code]. [br]See [method request] for the remaining parameters.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_impl" type="C3Http._Impl" setter="" getter="" default="&lt;unknown&gt;">
+		</member>
+	</members>
+	<constants>
+		<constant name="VERSION" value="&quot;v0.4.0&quot;">
+			The installed version of this addon, e.g. for logging or feature gating.
+		</constant>
+	</constants>
+</class>

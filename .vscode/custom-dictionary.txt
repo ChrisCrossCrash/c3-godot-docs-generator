@@ -1,0 +1,15 @@
+bbcode
+bitfield
+checkin
+CROSSLINK
+dataclasses
+dedented
+dedents
+doctool
+Kumm
+pytest
+setuptools
+testpaths
+USEC
+venv
+virtualenvs

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="C3Http._Impl" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="request">
+			<return type="C3Http.Response" />
+			<param index="0" name="url" type="String" />
+			<param index="1" name="custom_headers" type="PackedStringArray" />
+			<param index="2" name="method" type="int" />
+			<param index="3" name="request_data" type="Variant" />
+			<param index="4" name="options" type="C3Http.Options" />
+			<param index="5" name="_redirects_left" type="int" default="-1" />
+			<param index="6" name="_on_worker" type="bool" default="false" />
+			<param index="7" name="_start_ms" type="int" default="-1" />
+			<param index="8" name="_force_fresh" type="bool" default="false" />
+			<description>
+			</description>
+		</method>
+		<method name="_send_request">
+			<return type="int" />
+			<param index="0" name="client" type="HTTPClient" />
+			<param index="1" name="method" type="int" />
+			<param index="2" name="parsed" type="C3Http._Impl._ParsedURL" />
+			<param index="3" name="all_headers" type="PackedStringArray" />
+			<param index="4" name="request_data" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="_connect_client">
+			<return type="Variant" />
+			<param index="0" name="client" type="HTTPClient" />
+			<param index="1" name="parsed" type="C3Http._Impl._ParsedURL" />
+			<param index="2" name="options" type="C3Http.Options" />
+			<param index="3" name="start_ms" type="int" />
+			<param index="4" name="tree" type="SceneTree" />
+			<param index="5" name="on_worker" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="_pump">
+			<return type="void" />
+			<param index="0" name="tree" type="SceneTree" />
+			<param index="1" name="on_worker" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="_run_threaded">
+			<return type="C3Http.Response" />
+			<param index="0" name="url" type="String" />
+			<param index="1" name="custom_headers" type="PackedStringArray" />
+			<param index="2" name="method" type="int" />
+			<param index="3" name="request_data" type="Variant" />
+			<param index="4" name="options" type="C3Http.Options" />
+			<param index="5" name="redirects_left" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="_threads_available">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="_emit">
+			<return type="void" />
+			<param index="0" name="cb" type="Callable" />
+			<param index="1" name="threaded" type="bool" />
+			<param index="2" name="args" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="_parse_url">
+			<return type="C3Http._Impl._ParsedURL" />
+			<param index="0" name="url" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="_resolve_proxies">
+			<return type="Dictionary" />
+			<param index="0" name="options" type="C3Http.Options" />
+			<description>
+			</description>
+		</method>
+		<method name="_timed_out">
+			<return type="bool" />
+			<param index="0" name="start_ms" type="int" />
+			<param index="1" name="timeout" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="_cancelled">
+			<return type="bool" />
+			<param index="0" name="options" type="C3Http.Options" />
+			<description>
+			</description>
+		</method>
+		<method name="_emit_status_change">
+			<return type="int" enum="HTTPClient.Status" />
+			<param index="0" name="client" type="HTTPClient" />
+			<param index="1" name="last_status" type="int" enum="HTTPClient.Status" />
+			<param index="2" name="options" type="C3Http.Options" />
+			<param index="3" name="on_worker" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="_header_value">
+			<return type="String" />
+			<param index="0" name="headers" type="PackedStringArray" />
+			<param index="1" name="name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="_connection_close_requested">
+			<return type="bool" />
+			<param index="0" name="headers" type="PackedStringArray" />
+			<description>
+			</description>
+		</method>
+		<method name="_is_safe_to_retry">
+			<return type="bool" />
+			<param index="0" name="method" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="_build_request_headers">
+			<return type="PackedStringArray" />
+			<param index="0" name="custom_headers" type="PackedStringArray" />
+			<param index="1" name="accept_gzip" type="bool" />
+			<param index="2" name="streaming" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="_make_download_decoder">
+			<return type="StreamPeerGZIP" />
+			<param index="0" name="resp_headers" type="PackedStringArray" />
+			<param index="1" name="accept_gzip" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="_maybe_decompress_body">
+			<return type="Variant" />
+			<param index="0" name="body_bytes" type="PackedByteArray" />
+			<param index="1" name="resp_headers" type="PackedStringArray" />
+			<param index="2" name="accept_gzip" type="bool" />
+			<param index="3" name="body_size_limit" type="int" />
+			<param index="4" name="read_size" type="int" default="65536" />
+			<description>
+			</description>
+		</method>
+		<method name="_decode_chunk">
+			<return type="Dictionary" />
+			<param index="0" name="decoder" type="StreamPeerGZIP" />
+			<param index="1" name="chunk" type="PackedByteArray" />
+			<param index="2" name="read_size" type="int" />
+			<param index="3" name="budget" type="int" default="-1" />
+			<description>
+			</description>
+		</method>
+		<method name="_drain_decoder">
+			<return type="Dictionary" />
+			<param index="0" name="decoder" type="StreamPeerGZIP" />
+			<param index="1" name="read_size" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="_resolve_redirect_url">
+			<return type="String" />
+			<param index="0" name="location" type="String" />
+			<param index="1" name="host" type="String" />
+			<param index="2" name="port" type="int" />
+			<param index="3" name="tls" type="bool" />
+			<param index="4" name="base_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="_normalize_path">
+			<return type="String" />
+			<param index="0" name="path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="_redirect_method">
+			<return type="int" />
+			<param index="0" name="method" type="int" />
+			<param index="1" name="status" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="_redirect_body">
+			<return type="Variant" />
+			<param index="0" name="method" type="int" />
+			<param index="1" name="status" type="int" />
+			<param index="2" name="request_data" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="_strip_auth_if_cross_origin">
+			<return type="PackedStringArray" />
+			<param index="0" name="headers" type="PackedStringArray" />
+			<param index="1" name="origin" type="C3Http._Impl._ParsedURL" />
+			<param index="2" name="redirect" type="C3Http._Impl._ParsedURL" />
+			<description>
+			</description>
+		</method>
+		<method name="_drain_sse_buffer">
+			<return type="PackedByteArray" />
+			<param index="0" name="buffer" type="PackedByteArray" />
+			<param index="1" name="on_event" type="Callable" />
+			<param index="2" name="id_box" type="Array" />
+			<param index="3" name="retry_box" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="_find_sse_boundary">
+			<return type="Vector2i" />
+			<param index="0" name="buffer" type="PackedByteArray" />
+			<description>
+			</description>
+		</method>
+		<method name="_emit_sse_event">
+			<return type="void" />
+			<param index="0" name="raw_event" type="String" />
+			<param index="1" name="on_event" type="Callable" />
+			<param index="2" name="id_box" type="Array" />
+			<param index="3" name="retry_box" type="Array" />
+			<param index="4" name="id_has_nul" type="bool" default="false" />
+			<description>
+			</description>
+		</method>
+		<method name="_decode_sse_lines">
+			<return type="String" />
+			<param index="0" name="event_bytes" type="PackedByteArray" />
+			<description>
+			</description>
+		</method>
+		<method name="_id_field_has_nul">
+			<return type="bool" />
+			<param index="0" name="event_bytes" type="PackedByteArray" />
+			<description>
+			</description>
+		</method>
+		<method name="_fail">
+			<return type="C3Http.Response" />
+			<param index="0" name="error" type="C3Http.RequestError" />
+			<param index="1" name="sse_retry_ms" type="int" default="-1" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<constants>
+		<constant name="_PUMP_DELAY_USEC" value="1000">
+		</constant>
+	</constants>
+</class>
