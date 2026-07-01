@@ -76,19 +76,21 @@ def test_method_signature_includes_param_types(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
     md = render_class_markdown(registry["C3Http"], registry)
 
-    assert "`request`(`url`:" in md
+    assert "request(url:" in md
 
 
-def test_method_signature_param_type_link_is_not_nested_in_backticks(fixtures_xml_dir):
+def test_method_signature_renders_as_single_continuous_code_element(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
     md = render_class_markdown(registry["C3Http"], registry)
 
     string_link = (
-        "[`String`](https://docs.godotengine.org/en/stable/classes/class_string.html)"
+        '<a href="https://docs.godotengine.org/en/stable/classes/class_string.html">'
+        "String</a>"
     )
     assert (
-        f"`request`(`url`: {string_link}, " in md
-    ), "param type link must sit outside any backtick span so GFM renders it as a clickable link"
+        f"request(url: {string_link}, " in md
+    ), "signature must render as a single continuous <code> element with inline links"
+    assert md.count("<code>") == md.count("</code>")
 
 
 def test_member_enum_type_links_to_enum_anchor(fixtures_xml_dir):

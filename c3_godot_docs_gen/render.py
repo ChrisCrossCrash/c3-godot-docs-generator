@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
+import html
+
 from c3_godot_docs_gen.bbcode import bbcode_to_markdown
 from c3_godot_docs_gen.model import ClassDef, ParameterDef, TypeRef
 from c3_godot_docs_gen.resolve import (
     class_filename,
     resolve_class_ref,
     resolve_enum_ref,
+    resolve_enum_ref_html,
     resolve_type,
+    resolve_type_html,
 )
 
 
@@ -20,15 +24,25 @@ def _render_member_type(
     return resolve_type(type_ref.type_name, registry, current_class)
 
 
-def _format_params(
+def _render_member_type_html(
+    type_ref: TypeRef, registry: dict[str, ClassDef], current_class: str
+) -> str:
+    if type_ref.enum:
+        return resolve_enum_ref_html(type_ref.enum, registry, current_class)
+    return resolve_type_html(type_ref.type_name, registry, current_class)
+
+
+def _format_params_html(
     params: list[ParameterDef], registry: dict[str, ClassDef], current_class: str
 ) -> str:
+    """Renders a parameter list as a bare HTML fragment (no backticks) so it can be
+    embedded inside a single continuous <code> element alongside linked type names."""
     parts = []
     for p in params:
-        type_md = _render_member_type(p.type_name, registry, current_class)
-        piece = f"`{p.name}`: {type_md}"
+        type_html = _render_member_type_html(p.type_name, registry, current_class)
+        piece = f"{html.escape(p.name)}: {type_html}"
         if p.default_value is not None:
-            piece += f" = `{p.default_value}`"
+            piece += f" = {html.escape(p.default_value)}"
         parts.append(piece)
     return ", ".join(parts)
 
@@ -89,8 +103,9 @@ def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) ->
         lines.append("|---------|-----------|")
         for m in methods:
             ret_md = _render_member_type(m.return_type, registry, cc)
-            sig = _format_params(m.parameters, registry, cc)
-            lines.append(f"| {ret_md} | [`{m.name}`](#method-{m.name})({sig}) |")
+            sig_html = _format_params_html(m.parameters, registry, cc)
+            name_link = f'<a href="#method-{m.name}">{html.escape(m.name)}</a>'
+            lines.append(f"| {ret_md} | <code>{name_link}({sig_html})</code> |")
         lines.append("")
 
     if signals:
@@ -99,8 +114,9 @@ def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) ->
         lines.append("| Signal |")
         lines.append("|--------|")
         for s in signals:
-            sig = _format_params(s.parameters, registry, cc)
-            lines.append(f"| [`{s.name}`](#signal-{s.name})({sig}) |")
+            sig_html = _format_params_html(s.parameters, registry, cc)
+            name_link = f'<a href="#signal-{s.name}">{html.escape(s.name)}</a>'
+            lines.append(f"| <code>{name_link}({sig_html})</code> |")
         lines.append("")
 
     if class_def.constants or class_def.enums:
@@ -109,7 +125,9 @@ def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) ->
         for c in class_def.constants:
             lines.append(f'<a id="constant-{c.name}"></a>')
             lines.append("")
-            lines.append(f"**`{c.name}` = `{c.value}`**")
+            lines.append(
+                f"**<code>{html.escape(c.name)} = {html.escape(c.value)}</code>**"
+            )
             desc = bbcode_to_markdown(c.description, cc, registry)
             if desc:
                 lines.append("")
@@ -135,13 +153,17 @@ def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) ->
         lines.append("## Property Descriptions")
         lines.append("")
         for p in properties:
-            type_md = _render_member_type(p.type_name, registry, cc)
+            type_html = _render_member_type_html(p.type_name, registry, cc)
             default_suffix = (
-                f" = `{p.default_value}`" if p.default_value is not None else ""
+                f" = {html.escape(p.default_value)}"
+                if p.default_value is not None
+                else ""
             )
             lines.append(f'<a id="property-{p.name}"></a>')
             lines.append("")
-            lines.append(f"### {type_md} `{p.name}`{default_suffix}")
+            lines.append(
+                f"### <code>{type_html} {html.escape(p.name)}{default_suffix}</code>"
+            )
             lines.append("")
             desc = bbcode_to_markdown(p.description, cc, registry)
             if desc:
@@ -152,11 +174,13 @@ def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) ->
         lines.append("## Method Descriptions")
         lines.append("")
         for m in methods:
-            ret_md = _render_member_type(m.return_type, registry, cc)
-            sig = _format_params(m.parameters, registry, cc)
+            ret_html = _render_member_type_html(m.return_type, registry, cc)
+            sig_html = _format_params_html(m.parameters, registry, cc)
             lines.append(f'<a id="method-{m.name}"></a>')
             lines.append("")
-            lines.append(f"### {ret_md} `{m.name}`({sig})")
+            lines.append(
+                f"### <code>{ret_html} {html.escape(m.name)}({sig_html})</code>"
+            )
             lines.append("")
             desc = bbcode_to_markdown(m.description, cc, registry)
             if desc:
@@ -167,10 +191,10 @@ def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) ->
         lines.append("## Signal Descriptions")
         lines.append("")
         for s in signals:
-            sig = _format_params(s.parameters, registry, cc)
+            sig_html = _format_params_html(s.parameters, registry, cc)
             lines.append(f'<a id="signal-{s.name}"></a>')
             lines.append("")
-            lines.append(f"### `{s.name}`({sig})")
+            lines.append(f"### <code>{html.escape(s.name)}({sig_html})</code>")
             lines.append("")
             desc = bbcode_to_markdown(s.description, cc, registry)
             if desc:
