@@ -10,7 +10,9 @@ from c3_godot_docs_gen.render import render_class_markdown, render_index_markdow
 from c3_godot_docs_gen.resolve import class_filename
 
 
-def generate(xml_dir: Path, output_dir: Path, dry_run: bool = False) -> list[str]:
+def generate(
+    xml_dir: Path, output_dir: Path, dry_run: bool = False, index: bool = False
+) -> list[str]:
     registry = parse_registry(xml_dir)
 
     if not dry_run:
@@ -27,11 +29,12 @@ def generate(xml_dir: Path, output_dir: Path, dry_run: bool = False) -> list[str
             )
         generated.append(filename)
 
-    if not dry_run:
-        (output_dir / "index.md").write_text(
-            render_index_markdown(registry), encoding="utf-8"
-        )
-    generated.append("index.md")
+    if index:
+        if not dry_run:
+            (output_dir / "index.md").write_text(
+                render_index_markdown(registry), encoding="utf-8"
+            )
+        generated.append("index.md")
 
     return generated
 
@@ -54,9 +57,16 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Don't write files, just report what would be generated.",
     )
+    parser.add_argument(
+        "--index",
+        action="store_true",
+        help="Also generate an index.md file.",
+    )
     args = parser.parse_args(argv)
 
-    generated = generate(Path(args.path), Path(args.output), dry_run=args.dry_run)
+    generated = generate(
+        Path(args.path), Path(args.output), dry_run=args.dry_run, index=args.index
+    )
     for name in generated:
         print(name)
 

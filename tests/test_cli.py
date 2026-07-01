@@ -7,8 +7,16 @@ def test_generate_writes_one_file_per_public_class(fixtures_xml_dir, tmp_path):
     written = {p.name for p in tmp_path.glob("*.md")}
     assert "C3Http.Session.md" in written
     assert "C3Http.Options.md" in written
-    assert "index.md" in written
+    assert "index.md" not in written
     assert "C3Http.Session.md" in generated
+    assert "index.md" not in generated
+
+
+def test_generate_writes_index_when_requested(fixtures_xml_dir, tmp_path):
+    generated = generate(fixtures_xml_dir, tmp_path, index=True)
+
+    written = {p.name for p in tmp_path.glob("*.md")}
+    assert "index.md" in written
     assert "index.md" in generated
 
 
@@ -23,7 +31,7 @@ def test_generate_excludes_private_classes(fixtures_xml_dir, tmp_path):
 
 
 def test_index_lists_public_classes_only(fixtures_xml_dir, tmp_path):
-    generate(fixtures_xml_dir, tmp_path)
+    generate(fixtures_xml_dir, tmp_path, index=True)
 
     index_text = (tmp_path / "index.md").read_text(encoding="utf-8")
     assert "C3Http.Session" in index_text
@@ -43,5 +51,12 @@ def test_main_returns_zero_and_writes_output(fixtures_xml_dir, tmp_path):
     exit_code = main([str(fixtures_xml_dir), "-o", str(tmp_path)])
 
     assert exit_code == 0
-    assert (tmp_path / "index.md").exists()
+    assert not (tmp_path / "index.md").exists()
     assert (tmp_path / "C3Http.Session.md").exists()
+
+
+def test_main_writes_index_with_flag(fixtures_xml_dir, tmp_path):
+    exit_code = main([str(fixtures_xml_dir), "-o", str(tmp_path), "--index"])
+
+    assert exit_code == 0
+    assert (tmp_path / "index.md").exists()
