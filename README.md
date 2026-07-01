@@ -1,7 +1,6 @@
 # c3-godot-docs-gen
 
-Converts Godot's `--doctool` XML class-reference output into Markdown
-documentation (GitHub-Flavored Markdown), for GDScript-only projects.
+Converts Godot's `--doctool` XML class-reference output into Markdown documentation (GitHub-Flavored Markdown), for GDScript-only projects.
 
 ## Installation
 
@@ -29,8 +28,7 @@ c3-godot-docs-gen path/to/xml_output docs/api
 - `output` — output directory for generated Markdown.
 - `--dry-run` — print the filenames that would be generated without writing them.
 
-This writes one `ClassName.md` file per public class, plus an `index.md`
-listing all public classes.
+This writes one `ClassName.md` file per public class, plus an `index.md` listing all public classes.
 
 ## Development
 
@@ -57,5 +55,4 @@ The implementation is split into independently-testable layers:
 | `render.py` | Renders a parsed class into a Markdown page. |
 | `cli.py` | Command-line entry point; orchestrates parsing, rendering, and file output. |
 
-Tests live under `tests/`, with one test file per module and shared XML
-fixtures in `tests/fixtures/xml/`.
+Tests live under `tests/`, with one test file per module and shared XML fixtures in `tests/fixtures/xml/`.
