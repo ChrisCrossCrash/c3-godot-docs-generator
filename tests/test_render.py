@@ -7,7 +7,10 @@ def test_title_and_inherits(fixtures_xml_dir):
     md = render_class_markdown(registry["C3Http.Session"], registry)
 
     assert md.startswith("# C3Http.Session\n")
-    assert "**Inherits:** [`RefCounted`](https://docs.godotengine.org/en/stable/classes/class_refcounted.html)" in md
+    assert (
+        "**Inherits:** [`RefCounted`](https://docs.godotengine.org/en/stable/classes/class_refcounted.html)"
+        in md
+    )
 
 
 def test_properties_table_excludes_private(fixtures_xml_dir):
@@ -80,7 +83,9 @@ def test_method_signature_param_type_link_is_not_nested_in_backticks(fixtures_xm
     registry = parse_registry(fixtures_xml_dir)
     md = render_class_markdown(registry["C3Http"], registry)
 
-    string_link = "[`String`](https://docs.godotengine.org/en/stable/classes/class_string.html)"
+    string_link = (
+        "[`String`](https://docs.godotengine.org/en/stable/classes/class_string.html)"
+    )
     assert (
         f"`request`(`url`: {string_link}, " in md
     ), "param type link must sit outside any backtick span so GFM renders it as a clickable link"

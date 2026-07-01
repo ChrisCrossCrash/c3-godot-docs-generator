@@ -46,11 +46,17 @@ def test_single_newline_becomes_paragraph_break():
 
 
 def test_url_with_title():
-    assert md("[url=https://example.com]click here[/url]") == "[click here](https://example.com)"
+    assert (
+        md("[url=https://example.com]click here[/url]")
+        == "[click here](https://example.com)"
+    )
 
 
 def test_bare_url():
-    assert md("[url]https://example.com[/url]") == "[https://example.com](https://example.com)"
+    assert (
+        md("[url]https://example.com[/url]")
+        == "[https://example.com](https://example.com)"
+    )
 
 
 def test_lb_rb_literal_brackets():
@@ -67,27 +73,37 @@ def test_param_inline_code():
 
 def test_bare_class_ref_links_to_known_class(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
-    result = md("Create a [C3Http.Options]", current_class="C3Http.Session", registry=registry)
+    result = md(
+        "Create a [C3Http.Options]", current_class="C3Http.Session", registry=registry
+    )
     assert result == "Create a [`C3Http.Options`](C3Http.Options.md)"
 
 
 def test_bare_class_ref_to_current_class_is_bold(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
-    result = md("This is a [C3Http.Session]", current_class="C3Http.Session", registry=registry)
+    result = md(
+        "This is a [C3Http.Session]", current_class="C3Http.Session", registry=registry
+    )
     assert result == "This is a **C3Http.Session**"
 
 
 def test_member_ref(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
     result = md(
-        "See [member C3Http.Options.session]", current_class="C3Http.Session", registry=registry
+        "See [member C3Http.Options.session]",
+        current_class="C3Http.Session",
+        registry=registry,
     )
     assert result == "See [`session`](C3Http.Options.md#property-session)"
 
 
 def test_method_ref(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
-    result = md("Call [method C3Http.request]", current_class="C3Http.Session", registry=registry)
+    result = md(
+        "Call [method C3Http.request]",
+        current_class="C3Http.Session",
+        registry=registry,
+    )
     assert result == "Call [`request()`](C3Http.md#method-request)"
 
 

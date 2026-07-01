@@ -27,7 +27,10 @@ def test_resolve_class_ref_unknown_links_to_godot_docs(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
 
     md = resolve_class_ref("HTTPClient", registry, current_class="C3Http.Session")
-    assert md == "[`HTTPClient`](https://docs.godotengine.org/en/stable/classes/class_httpclient.html)"
+    assert (
+        md
+        == "[`HTTPClient`](https://docs.godotengine.org/en/stable/classes/class_httpclient.html)"
+    )
 
 
 def test_resolve_type_void_is_plain_code():
@@ -67,7 +70,10 @@ def test_resolve_member_link_same_class_uses_bare_anchor(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
 
     md = resolve_member_link(
-        "C3Http.Session.idle_timeout", "property", registry, current_class="C3Http.Session"
+        "C3Http.Session.idle_timeout",
+        "property",
+        registry,
+        current_class="C3Http.Session",
     )
     assert md == "[`idle_timeout`](#property-idle_timeout)"
 
@@ -84,7 +90,9 @@ def test_resolve_member_link_other_class_links_to_file(fixtures_xml_dir):
 def test_resolve_member_link_method_appends_call_parens(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
 
-    md = resolve_member_link("C3Http.request", "method", registry, current_class="C3Http")
+    md = resolve_member_link(
+        "C3Http.request", "method", registry, current_class="C3Http"
+    )
     assert md == "[`request()`](#method-request)"
 
 
@@ -100,7 +108,9 @@ def test_resolve_enum_ref_splits_on_last_dot(fixtures_xml_dir):
 def test_resolve_enum_ref_from_other_class(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
 
-    md = resolve_enum_ref("C3Http.RequestError.Kind", registry, current_class="C3Http.Response")
+    md = resolve_enum_ref(
+        "C3Http.RequestError.Kind", registry, current_class="C3Http.Response"
+    )
     assert md == "[`Kind`](C3Http.RequestError.md#enum-Kind)"
 
 

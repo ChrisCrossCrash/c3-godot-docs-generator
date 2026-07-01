@@ -91,7 +91,9 @@ def test_private_class_detection(fixtures_xml_dir):
     nested_private = parse_class_file(fixtures_xml_dir / "C3Http._Impl._ParsedURL.xml")
     assert nested_private.is_private
 
-    session_pool_entry = parse_class_file(fixtures_xml_dir / "C3Http.Session._PoolEntry.xml")
+    session_pool_entry = parse_class_file(
+        fixtures_xml_dir / "C3Http.Session._PoolEntry.xml"
+    )
     assert session_pool_entry.is_private
 
     session = parse_class_file(fixtures_xml_dir / "C3Http.Session.xml")
