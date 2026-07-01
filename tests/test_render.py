@@ -76,10 +76,10 @@ def test_method_signature_includes_param_types(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
     md = render_class_markdown(registry["C3Http"], registry)
 
-    assert "request(url:" in md
+    assert "func request(" in md
 
 
-def test_method_signature_renders_as_single_continuous_code_element(fixtures_xml_dir):
+def test_method_signature_wraps_multiple_params_one_per_line(fixtures_xml_dir):
     registry = parse_registry(fixtures_xml_dir)
     md = render_class_markdown(registry["C3Http"], registry)
 
@@ -87,10 +87,23 @@ def test_method_signature_renders_as_single_continuous_code_element(fixtures_xml
         '<a href="https://docs.godotengine.org/en/stable/classes/class_string.html">'
         "String</a>"
     )
-    assert (
-        f"request(url: {string_link}, " in md
-    ), "signature must render as a single continuous <code> element with inline links"
+    assert f"    url: {string_link},\n" in md
     assert md.count("<code>") == md.count("</code>")
+
+
+def test_method_signature_single_param_stays_on_one_line(fixtures_xml_dir):
+    registry = parse_registry(fixtures_xml_dir)
+    md = render_class_markdown(registry["C3Http.Session"], registry)
+
+    assert "func checkout(key: " in md
+    assert "func checkout(\n" not in md
+
+
+def test_method_signature_no_params(fixtures_xml_dir):
+    registry = parse_registry(fixtures_xml_dir)
+    md = render_class_markdown(registry["C3Http.Session"], registry)
+
+    assert "func close() -> void:" in md
 
 
 def test_member_enum_type_links_to_enum_anchor(fixtures_xml_dir):

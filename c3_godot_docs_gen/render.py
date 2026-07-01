@@ -32,19 +32,43 @@ def _render_member_type_html(
     return resolve_type_html(type_ref.type_name, registry, current_class)
 
 
+def _render_param_html(
+    p: ParameterDef, registry: dict[str, ClassDef], current_class: str
+) -> str:
+    type_html = _render_member_type_html(p.type_name, registry, current_class)
+    piece = f"{html.escape(p.name)}: {type_html}"
+    if p.default_value is not None:
+        piece += f" = {html.escape(p.default_value)}"
+    return piece
+
+
 def _format_params_html(
     params: list[ParameterDef], registry: dict[str, ClassDef], current_class: str
 ) -> str:
     """Renders a parameter list as a bare HTML fragment (no backticks) so it can be
     embedded inside a single continuous <code> element alongside linked type names."""
-    parts = []
-    for p in params:
-        type_html = _render_member_type_html(p.type_name, registry, current_class)
-        piece = f"{html.escape(p.name)}: {type_html}"
-        if p.default_value is not None:
-            piece += f" = {html.escape(p.default_value)}"
-        parts.append(piece)
+    parts = [_render_param_html(p, registry, current_class) for p in params]
     return ", ".join(parts)
+
+
+def _render_method_signature_block(
+    name: str,
+    params: list[ParameterDef],
+    return_html: str,
+    registry: dict[str, ClassDef],
+    current_class: str,
+) -> str:
+    """Renders a GDScript-style `func name(...) -> ReturnType:` signature as a
+    <pre><code> block, one parameter per line when there is more than one."""
+    param_htmls = [_render_param_html(p, registry, current_class) for p in params]
+    if len(param_htmls) > 1:
+        params_block = ",\n".join(f"    {p}" for p in param_htmls)
+        signature = f"func {html.escape(name)}(\n{params_block}\n) -> {return_html}:"
+    else:
+        signature = (
+            f"func {html.escape(name)}({', '.join(param_htmls)}) -> {return_html}:"
+        )
+    return f"<pre><code>{signature}</code></pre>"
 
 
 def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) -> str:
@@ -175,11 +199,14 @@ def render_class_markdown(class_def: ClassDef, registry: dict[str, ClassDef]) ->
         lines.append("")
         for m in methods:
             ret_html = _render_member_type_html(m.return_type, registry, cc)
-            sig_html = _format_params_html(m.parameters, registry, cc)
             lines.append(f'<a id="method-{m.name}"></a>')
             lines.append("")
+            lines.append(f"### <code>{html.escape(m.name)}</code>")
+            lines.append("")
             lines.append(
-                f"### <code>{ret_html} {html.escape(m.name)}({sig_html})</code>"
+                _render_method_signature_block(
+                    m.name, m.parameters, ret_html, registry, cc
+                )
             )
             lines.append("")
             desc = bbcode_to_markdown(m.description, cc, registry)
