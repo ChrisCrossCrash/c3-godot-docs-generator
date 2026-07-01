@@ -48,7 +48,7 @@ def test_dry_run_does_not_write_files(fixtures_xml_dir, tmp_path):
 
 
 def test_main_returns_zero_and_writes_output(fixtures_xml_dir, tmp_path):
-    exit_code = main([str(fixtures_xml_dir), "-o", str(tmp_path)])
+    exit_code = main([str(fixtures_xml_dir), str(tmp_path)])
 
     assert exit_code == 0
     assert not (tmp_path / "index.md").exists()
@@ -56,7 +56,7 @@ def test_main_returns_zero_and_writes_output(fixtures_xml_dir, tmp_path):
 
 
 def test_main_writes_index_with_flag(fixtures_xml_dir, tmp_path):
-    exit_code = main([str(fixtures_xml_dir), "-o", str(tmp_path), "--index"])
+    exit_code = main([str(fixtures_xml_dir), str(tmp_path), "--index"])
 
     assert exit_code == 0
     assert (tmp_path / "index.md").exists()

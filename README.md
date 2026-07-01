@@ -22,11 +22,11 @@ This produces one `.xml` file per class (e.g. `MyClass.xml`).
 **2. Generate Markdown documentation:**
 
 ```sh
-c3-godot-docs-gen path/to/xml_output -o docs/api
+c3-godot-docs-gen path/to/xml_output docs/api
 ```
 
 - `path` — directory containing the doctool-exported XML files.
-- `-o, --output` — output directory for generated Markdown (default `docs/api`).
+- `output` — output directory for generated Markdown.
 - `--dry-run` — print the filenames that would be generated without writing them.
 
 This writes one `ClassName.md` file per public class, plus an `index.md`

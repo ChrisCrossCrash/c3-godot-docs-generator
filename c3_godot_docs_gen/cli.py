@@ -46,12 +46,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "path", help="Directory containing the doctool-exported XML files."
     )
-    parser.add_argument(
-        "-o",
-        "--output",
-        default="docs/api",
-        help="Output directory for generated Markdown.",
-    )
+    parser.add_argument("output", help="Output directory for generated Markdown.")
     parser.add_argument(
         "--dry-run",
         action="store_true",
