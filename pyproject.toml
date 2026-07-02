@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "c3-godot-docs-gen"
-version = "0.3.0"
+version = "0.3.1"
 description = "Converts Godot doctool XML class references into Markdown documentation."
 authors = ["ChrisCrossCrash <chrislkumm@protonmail.com>"]
 license = "MIT"
