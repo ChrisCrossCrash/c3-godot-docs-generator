@@ -98,7 +98,10 @@ class ClassDef:
 
     @property
     def is_private(self) -> bool:
-        return any(segment.startswith("_") for segment in self.name.split("."))
+        return any(
+            segment.startswith("_") or segment.startswith('"')
+            for segment in self.name.split(".")
+        )
 
     def public_methods(self) -> list[MethodDef]:
         return [m for m in self.methods if not m.is_private]

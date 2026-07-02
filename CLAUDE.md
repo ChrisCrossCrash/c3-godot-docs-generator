@@ -37,7 +37,7 @@ The pipeline is a strict one-way chain:
 XML files → parse.py → model.py → (resolve.py, bbcode.py) → render.py → cli.py → .md files
 ```
 
-**`model.py`** — Pure dataclasses: `ClassDef`, `MethodDef`, `PropertyDef`, `SignalDef`, `ConstantDef`, `EnumDef`, `ParameterDef`, `TypeRef`. No parsing or rendering logic here. Privacy (underscore prefix on any name segment) is determined by `is_private` properties on the dataclasses.
+**`model.py`** — Pure dataclasses: `ClassDef`, `MethodDef`, `PropertyDef`, `SignalDef`, `ConstantDef`, `EnumDef`, `ParameterDef`, `TypeRef`. No parsing or rendering logic here. Privacy is determined by `is_private` properties on the dataclasses: an underscore prefix on any name segment, or (for `ClassDef`) a name segment that's a quoted resource path (Godot's doctool fallback name for a script with no `class_name`).
 
 **`parse.py`** — Reads Godot `--doctool` XML files and produces a `registry: dict[str, ClassDef]`. Entry point is `parse_registry(xml_dir)`.
 
